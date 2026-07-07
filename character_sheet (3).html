@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Личное дело — лист персонажа</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper: #e9e4d6;
+  --paper-dark: #dcd5c2;
+  --ink: #23241f;
+  --ink-soft: #4a4a42;
+  --stamp-red: #a2372f;
+  --folder-gold: #a1793c;
+  --line: #b9b099;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background: var(--paper-dark);
+  font-family:'IBM Plex Sans', sans-serif;
+  color:var(--ink);
+  padding:24px;
+}
+
+.dossier{
+  max-width:900px;
+  margin:0 auto;
+  background:
+    linear-gradient(var(--paper), var(--paper)) padding-box;
+  border:1px solid var(--line);
+  box-shadow: 0 12px 40px rgba(0,0,0,.25);
+  position:relative;
+}
+
+/* header */
+.header{
+  padding:28px 32px 18px 32px;
+  border-bottom:2px solid var(--ink);
+  position:relative;
+}
+.eyebrow{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.18em;
+  color:var(--ink-soft);
+  text-transform:uppercase;
+}
+.title{
+  font-family:'Special Elite', monospace;
+  font-size:32px;
+  margin:4px 0 0 0;
+  letter-spacing:.02em;
+}
+.stamp{
+  position:absolute;
+  top:22px; right:28px;
+  border:3px solid var(--stamp-red);
+  color:var(--stamp-red);
+  font-family:'Special Elite', monospace;
+  font-size:13px;
+  padding:5px 10px;
+  transform:rotate(-8deg);
+  opacity:.85;
+  letter-spacing:.12em;
+  user-select:none;
+}
+
+/* tabs */
+.tabs{
+  display:flex;
+  gap:2px;
+  padding:0 32px;
+  background:var(--paper-dark);
+  border-bottom:1px solid var(--line);
+  overflow-x:auto;
+}
+.tab{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  padding:10px 16px;
+  background:var(--paper-dark);
+  color:var(--ink-soft);
+  border:none;
+  border-top:3px solid transparent;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.tab.active{
+  background:var(--paper);
+  color:var(--ink);
+  border-top:3px solid var(--folder-gold);
+}
+
+.panel{display:none; padding:28px 32px 36px 32px;}
+.panel.active{display:block;}
+
+.field-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+  gap:16px 20px;
+  margin-bottom:18px;
+}
+label{
+  display:block;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:4px;
+}
+input[type=text], input[type=number], textarea{
+  width:100%;
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:15px;
+  background:transparent;
+  border:none;
+  border-bottom:1px solid var(--line);
+  padding:4px 2px;
+  color:var(--ink);
+}
+input:focus, textarea:focus{outline:none; border-bottom:1px solid var(--ink);}
+textarea{resize:vertical; border:1px solid var(--line); padding:10px; border-radius:2px;}
+
+/* stats */
+.pool-bar{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  margin-bottom:20px;
+  padding-bottom:14px;
+  border-bottom:1px dashed var(--line);
+}
+.pool-label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.pool-value{
+  font-family:'Special Elite', monospace;
+  font-size:22px;
+  color:var(--ink);
+}
+.pool-value.empty{color:var(--stamp-red);}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(230px,1fr));
+  gap:16px;
+}
+.stat-card{
+  border:1px solid var(--line);
+  background:#f2eee1;
+  padding:14px 16px;
+  position:relative;
+}
+.stat-name{
+  font-family:'Special Elite', monospace;
+  font-size:17px;
+  margin:0 0 8px 0;
+}
+.stat-controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+.stat-controls input{
+  width:52px;
+  text-align:center;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:18px;
+  font-weight:600;
+  border:1px solid var(--line);
+  border-radius:2px;
+  padding:4px;
+}
+.stepper{
+  display:flex;
+  flex-direction:column;
+}
+.stepper button{
+  width:22px; height:16px;
+  border:1px solid var(--line);
+  background:var(--paper-dark);
+  cursor:pointer;
+  font-size:10px;
+  line-height:1;
+  padding:0;
+}
+.roll-row{display:flex; gap:8px; align-items:center;}
+.roll-btn{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.05em;
+  background:var(--ink);
+  color:var(--paper);
+  border:none;
+  padding:7px 12px;
+  cursor:pointer;
+  border-radius:2px;
+}
+.roll-btn:hover{background:#000;}
+.dc-input{width:44px; text-align:center;}
+.result{
+  font-family:'Special Elite', monospace;
+  font-size:13px;
+  min-height:18px;
+  margin-top:8px;
+}
+.result.success{color:#2f6d3c;}
+.result.fail{color:var(--stamp-red);}
+
+/* skills list */
+.list-block{margin-bottom:22px;}
+.list-block h3{
+  font-family:'Special Elite', monospace;
+  font-size:16px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:6px;
+}
+.row-item{
+  display:flex; gap:10px; align-items:center;
+  margin-bottom:8px;
+}
+.row-item input[type=text]{flex:1;}
+.row-item select{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  background:transparent;
+  border:1px solid var(--line);
+  padding:4px;
+}
+.del-btn, .add-btn{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  background:transparent;
+  border:1px solid var(--line);
+  cursor:pointer;
+  padding:4px 8px;
+  border-radius:2px;
+  color:var(--ink-soft);
+}
+.add-btn{margin-top:4px;}
+
+.skills-explainer{
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--ink-soft);
+  margin:0 0 4px 0;
+}
+.example-link{
+  text-decoration:underline;
+  text-underline-offset:2px;
+  color:var(--ink);
+  font-weight:600;
+  cursor:pointer;
+}
+.example-box{
+  display:none;
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--ink);
+  background:#f2eee1;
+  border:1px solid var(--line);
+  border-radius:2px;
+  padding:12px 14px;
+  margin:0 0 18px 0;
+}
+.example-box.open{display:block;}
+
+.skill-list{display:flex; flex-direction:column;}
+.skill-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 4px;
+  border-bottom:1px dashed var(--line);
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:15px;
+}
+.skill-row:last-child{border-bottom:none;}
+.skill-row-label{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex:1;
+  cursor:pointer;
+  min-width:0;
+}
+.skill-row input[type=checkbox]{
+  width:17px; height:17px;
+  accent-color: var(--ink);
+  cursor:pointer;
+  flex-shrink:0;
+}
+.skill-name{flex:1;}
+.skill-help{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:17px; height:17px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:10px;
+  color:var(--ink-soft);
+  cursor:help;
+  flex-shrink:0;
+  user-select:none;
+}
+.skill-help .tooltip{
+  visibility:hidden;
+  opacity:0;
+  position:absolute;
+  bottom:135%;
+  right:-6px;
+  width:220px;
+  background:var(--ink);
+  color:var(--paper);
+  font-family:'IBM Plex Sans', sans-serif;
+  font-size:12px;
+  line-height:1.4;
+  padding:8px 10px;
+  border-radius:3px;
+  text-align:left;
+  z-index:20;
+  transition:opacity .15s ease;
+  pointer-events:none;
+}
+.skill-help:hover .tooltip,
+.skill-help:focus .tooltip{
+  visibility:visible;
+  opacity:1;
+}
+.skill-attr{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.footnote{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color:var(--ink-soft);
+  margin-top:26px;
+  line-height:1.6;
+  border-top:1px dashed var(--line);
+  padding-top:12px;
+}
+
+@media (max-width:520px){
+  .title{font-size:24px;}
+  .stamp{font-size:10px; padding:4px 7px; top:16px; right:16px;}
+}
+
+/* screens */
+.screen{display:none;}
+.screen.active{display:block;}
+
+.case-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 32px 0 32px;
+  flex-wrap:wrap;
+}
+.back-btn{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.05em;
+  background:transparent;
+  border:1px solid var(--line);
+  cursor:pointer;
+  padding:6px 12px;
+  border-radius:2px;
+  color:var(--ink-soft);
+}
+.back-btn:hover{color:var(--ink); border-color:var(--ink);}
+.case-bar-title{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+
+.new-case-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.new-case-row input[type=text]{flex:1;}
+
+.case-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:12px 4px;
+  border-bottom:1px dashed var(--line);
+}
+.case-row:last-child{border-bottom:none;}
+.case-row-main{display:flex; flex-direction:column; gap:3px;}
+.case-row-title{font-family:'Special Elite', monospace; font-size:17px;}
+.case-row-date{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:11px;
+  color:var(--ink-soft);
+}
+.case-row-actions{display:flex; gap:8px;}
+.case-list-empty{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  color:var(--ink-soft);
+  padding:8px 4px;
+}
+</style>
+</head>
+<body>
+
+<!-- ЭКРАН: СПИСОК ЛИЧНЫХ ДЕЛ -->
+<div class="screen active" id="screen-list">
+  <div class="dossier">
+    <div class="header">
+      <div class="eyebrow">Архив</div>
+      <h1 class="title">Личные дела</h1>
+      <div class="stamp">ARCHIVE</div>
+    </div>
+    <div style="padding:28px 32px 36px 32px;">
+      <div class="list-block">
+        <h3>Новое личное дело</h3>
+        <div class="new-case-row">
+          <input type="text" id="new-case-title" placeholder="Название дела (например, Иванов И.И.)" onkeydown="if(event.key==='Enter'){createCase();}">
+          <button class="add-btn" onclick="createCase()">+ создать</button>
+        </div>
+      </div>
+      <div class="list-block">
+        <h3>Существующие дела</h3>
+        <div id="case-list"></div>
+        <p class="case-list-empty" id="case-list-empty" style="display:none;">Пока нет ни одного личного дела.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ЭКРАН: ОТКРЫТОЕ ЛИЧНОЕ ДЕЛО -->
+<div class="screen" id="screen-case">
+<div class="dossier">
+
+  <div class="case-bar">
+    <button class="back-btn" onclick="goBackToList()">← К списку дел</button>
+    <span style="display:flex; align-items:center; gap:14px;">
+      <span class="case-bar-title" id="save-status"></span>
+      <span class="case-bar-title" id="case-title-bar"></span>
+    </span>
+  </div>
+
+  <div class="header">
+    <div class="eyebrow">Личное дело сотрудника</div>
+    <h1 class="title">Лист персонажа</h1>
+    <div class="stamp">FILE OPEN</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="t-info">Досье</button>
+    <button class="tab" data-tab="t-stats">Характеристики</button>
+    <button class="tab" data-tab="t-skills">Навыки</button>
+    <button class="tab" data-tab="t-inv">Инвентарь</button>
+    <button class="tab" data-tab="t-notes">Заметки</button>
+  </div>
+
+  <!-- ДОСЬЕ -->
+  <div class="panel active" id="t-info">
+    <div class="field-row">
+      <div><label>Имя</label><input type="text" id="field-name" placeholder="Имя Фамилия"></div>
+      <div><label>Возраст</label><input type="text" id="field-age" placeholder="—"></div>
+      <div><label>Место работы</label><input type="text" id="field-job" placeholder="—"></div>
+      <div><label>Отряд</label><input type="text" id="field-unit" placeholder="—"></div>
+    </div>
+    <div class="field-row">
+      <div><label>Внешность</label><input type="text" id="field-appearance" placeholder="рост, телосложение, приметы"></div>
+      <div><label>Прозвище / маска</label><input type="text" id="field-nickname" placeholder=""></div>
+    </div>
+    <div class="list-block">
+      <h3>Предыстория</h3>
+      <textarea rows="5" id="field-background" placeholder="Краткая история персонажа: откуда он, что привело его сюда, ключевые события"></textarea>
+    </div>
+    <div class="list-block">
+      <h3>Черты характера</h3>
+      <div class="field-row">
+        <div><label>Сильные стороны</label><input type="text" id="field-strength"></div>
+        <div><label>Слабости / изъяны</label><input type="text" id="field-weakness"></div>
+        <div><label>Цель / мотивация</label><input type="text" id="field-goal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ХАРАКТЕРИСТИКИ -->
+  <div class="panel" id="t-stats">
+    <div class="pool-bar">
+      <span class="pool-label">Очков в запасе:</span>
+      <span class="pool-value" id="pool-remaining">15</span>
+      <span class="pool-label">/ 15</span>
+    </div>
+    <div class="stat-grid" id="stat-grid"></div>
+  </div>
+
+  <!-- НАВЫКИ -->
+  <div class="panel" id="t-skills">
+    <div class="pool-bar">
+      <span class="pool-label">Очков навыков:</span>
+      <span class="pool-value" id="skill-pool-remaining">7</span>
+      <span class="pool-label">/ 7</span>
+    </div>
+    <p class="skills-explainer">
+      Наличие навыка позволяет добавить дополнительную единицу в бонус на соответствующую проверку.
+      Если у Вас нет навыка, Вы всё ещё можете пройти проверку на него, просто без бонуса.
+      <span class="example-link" onclick="toggleExample()">ПРИМЕР</span>
+    </p>
+    <div class="example-box" id="example-box">
+      Если Вам нужно запрыгнуть на высокое место, вы бросаете кубик Д20 на ловкость. Вам выпадает,
+      например, 10. Вы добавляете к этому результату своё значение ловкости (например, +2) и +1 за
+      наличие навыка акробатики. В результате у вас получается бросок кубика равный 13. Если навыка
+      акробатики нет, то вы добавляете к результату броска только значение ловкости.
+    </div>
+    <div id="skills-container"></div>
+  </div>
+
+  <!-- ИНВЕНТАРЬ -->
+  <div class="panel" id="t-inv">
+    <div class="list-block">
+      <h3>При себе</h3>
+      <div id="inv-list"></div>
+      <button class="add-btn" onclick="addRow('inv-list', false); scheduleSave();">+ добавить предмет</button>
+    </div>
+  </div>
+
+  <!-- ЗАМЕТКИ -->
+  <div class="panel" id="t-notes">
+    <div class="list-block">
+      <h3>Связи и отношения</h3>
+      <textarea rows="4" id="field-connections" placeholder="Ключевые NPC и другие персонажи, отношения с ними"></textarea>
+    </div>
+    <div class="list-block">
+      <h3>Свободные заметки</h3>
+      <textarea rows="6" id="field-freenotes" placeholder="Секреты, планы, детали для мастера"></textarea>
+    </div>
+  </div>
+
+  <div class="footnote" style="padding:0 32px 24px 32px; border-top:none;">
+    Данные автоматически сохраняются в этом личном деле по мере ввода.
+  </div>
+</div>
+</div>
+
+<script>
+// tabs
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// stats
+const stats = ['Сила','Ловкость','Интеллект','Восприятие','Харизма','Выносливость'];
+const grid = document.getElementById('stat-grid');
+const POOL_TOTAL = 15;
+const STAT_MAX = 5;
+
+stats.forEach((name, i)=>{
+  const card = document.createElement('div');
+  card.className = 'stat-card';
+  card.innerHTML = `
+    <p class="stat-name">${name}</p>
+    <div class="stat-controls">
+      <div class="stepper">
+        <button onclick="stepStat(${i},1)">▲</button>
+        <button onclick="stepStat(${i},-1)">▼</button>
+      </div>
+      <input type="number" id="stat-${i}" value="0" min="0" max="5" oninput="onStatInput(${i})">
+    </div>
+  `;
+  grid.appendChild(card);
+});
+updatePool();
+
+function currentSum(){
+  let sum = 0;
+  stats.forEach((_, i)=>{
+    sum += parseInt(document.getElementById('stat-'+i).value) || 0;
+  });
+  return sum;
+}
+
+// sum of all stats EXCEPT the one at index `excludeIndex`
+function otherSum(excludeIndex){
+  let sum = 0;
+  stats.forEach((_, i)=>{
+    if(i !== excludeIndex){
+      sum += parseInt(document.getElementById('stat-'+i).value) || 0;
+    }
+  });
+  return sum;
+}
+
+function updatePool(){
+  const remaining = POOL_TOTAL - currentSum();
+  const el = document.getElementById('pool-remaining');
+  el.textContent = remaining;
+  el.classList.toggle('empty', remaining <= 0);
+}
+
+function stepStat(i, delta){
+  const input = document.getElementById('stat-'+i);
+  let v = parseInt(input.value) || 0;
+  const others = otherSum(i);
+
+  let newV = v + delta;
+  newV = Math.max(0, Math.min(STAT_MAX, newV));
+
+  // never let the total exceed the pool
+  if(others + newV > POOL_TOTAL){
+    newV = Math.max(0, POOL_TOTAL - others);
+  }
+
+  input.value = newV;
+  updatePool();
+}
+
+function onStatInput(i){
+  const input = document.getElementById('stat-'+i);
+  let v = parseInt(input.value);
+  if(isNaN(v) || v < 0) v = 0;
+  v = Math.min(STAT_MAX, v);
+
+  // clamp so total never exceeds the pool
+  const others = otherSum(i);
+  if(others + v > POOL_TOTAL){
+    v = Math.max(0, POOL_TOTAL - others);
+  }
+  input.value = v;
+  updatePool();
+}
+
+// dynamic rows for inventory
+function addRow(containerId, withStat){
+  const container = document.getElementById(containerId);
+  const row = document.createElement('div');
+  row.className = 'row-item';
+  let inner = `<input type="text" placeholder="${withStat ? 'название навыка' : 'предмет'}">`;
+  if(withStat){
+    inner += `<select>
+      <option>Сила</option><option>Ловкость</option><option>Интеллект</option>
+      <option>Восприятие</option><option>Харизма</option><option>Выносливость</option>
+    </select>`;
+  }
+  inner += `<button class="del-btn" onclick="this.parentElement.remove(); scheduleSave();">✕</button>`;
+  row.innerHTML = inner;
+  container.appendChild(row);
+}
+
+// seed a couple of empty inventory rows
+addRow('inv-list', false);
+addRow('inv-list', false);
+
+// ---- skills (fixed list, checkbox yes/no, 7-point pool) ----
+const SKILL_POOL_TOTAL = 7;
+const skillGroups = [
+  { attr:'Сила', skills:[
+    {name:'Атлетика', desc:'бег, лазание, плавание, физическая выносливость в моменте'},
+    {name:'Грубая сила', desc:'сдвинуть/поднять тяжёлое, проломить преграду'},
+    {name:'Рукопашный бой', desc:'выломать дверь, удержать что-то тяжёлое, оттащить человека'}
+  ]},
+  { attr:'Ловкость', skills:[
+    {name:'Скрытность', desc:'красться, прятаться, не привлекать внимание'},
+    {name:'Акробатика', desc:'равновесие, увороты, залезть в труднодоступное место'},
+    {name:'Вождение', desc:'машина, мотоцикл, велосипед'},
+    {name:'Ловкость рук', desc:'карманная кража, фокусы, работа с мелкими предметами'}
+  ]},
+  { attr:'Выносливость', skills:[
+    {name:'Стойкость к боли/усталости', desc:'не отключиться, продержаться на ногах'},
+    {name:'Устойчивость к вредным воздействиям', desc:'алкоголь, яды, недосып, болезни'},
+    {name:'Стрессоустойчивость', desc:'не поддаться на уговоры/давление'}
+  ]},
+  { attr:'Интеллект', skills:[
+    {name:'Эрудиция', desc:'общие знания, факты, история, культура'},
+    {name:'Дедукция', desc:'анализ улик, логические выводы, расследование'},
+    {name:'Финансы/Юриспруденция', desc:'разобраться в документах, деньгах, законах'},
+    {name:'Медицина', desc:'оказать помощь, разбираться в теле и болезнях'},
+    {name:'Механика', desc:'чинить, разбирать, собирать технику'},
+    {name:'Техника/IT', desc:'компьютеры, взлом, гаджеты, программирование'}
+  ]},
+  { attr:'Восприятие', skills:[
+    {name:'Внимательность', desc:'заметить деталь, улику, слежку'},
+    {name:'Психология', desc:'заметить ложь, считать эмоцию'},
+    {name:'Устойчивость к заражению', desc:'как быстро персонаж поддаётся заражению во тьме'}
+  ]},
+  { attr:'Харизма', skills:[
+    {name:'Убеждение', desc:'уговорить, переубедить'},
+    {name:'Обман', desc:'соврать убедительно'},
+    {name:'Запугивание', desc:'надавить, напугать'},
+    {name:'Обаяние (Флирт)', desc:'расположить к себе, очаровать цель'}
+  ]}
+];
+
+// flatten into a single indexed list, keeping track of which attribute each skill belongs to
+const skillsData = [];
+skillGroups.forEach(group=>{
+  group.skills.forEach(skill=>{
+    skillsData.push({ name: skill.name, desc: skill.desc, attr: group.attr });
+  });
+});
+
+function buildSkills(){
+  const container = document.getElementById('skills-container');
+  skillGroups.forEach(group=>{
+    const block = document.createElement('div');
+    block.className = 'list-block';
+
+    const h = document.createElement('h3');
+    h.textContent = group.attr;
+    block.appendChild(h);
+
+    const list = document.createElement('div');
+    list.className = 'skill-list';
+
+    group.skills.forEach(skill=>{
+      const idx = skillsData.findIndex(s=>s.name===skill.name && s.attr===group.attr);
+      const row = document.createElement('div');
+      row.className = 'skill-row';
+      row.innerHTML = `
+        <label class="skill-row-label">
+          <input type="checkbox" id="skill-${idx}" onchange="onSkillToggle(${idx})">
+          <span class="skill-name">${skill.name}</span>
+        </label>
+        <span class="skill-help">?
+          <span class="tooltip">${skill.desc}</span>
+        </span>
+        <span class="skill-attr" id="skill-attr-${idx}">${group.attr}</span>
+      `;
+      list.appendChild(row);
+    });
+
+    block.appendChild(list);
+    container.appendChild(block);
+  });
+}
+buildSkills();
+
+function skillCount(){
+  let count = 0;
+  skillsData.forEach((_, i)=>{
+    if(document.getElementById('skill-'+i).checked) count++;
+  });
+  return count;
+}
+
+function updateSkillPool(){
+  const remaining = SKILL_POOL_TOTAL - skillCount();
+  const el = document.getElementById('skill-pool-remaining');
+  el.textContent = remaining;
+  el.classList.toggle('empty', remaining <= 0);
+}
+
+function updateSkillAttrLabel(i){
+  const input = document.getElementById('skill-'+i);
+  const label = document.getElementById('skill-attr-'+i);
+  const attr = skillsData[i].attr;
+  label.textContent = input.checked ? `${attr} + 1` : attr;
+}
+
+function onSkillToggle(i){
+  const input = document.getElementById('skill-'+i);
+  if(input.checked && skillCount() > SKILL_POOL_TOTAL){
+    // no points left — revert the checkbox
+    input.checked = false;
+  }
+  updateSkillAttrLabel(i);
+  updateSkillPool();
+}
+
+updateSkillPool();
+
+function toggleExample(){
+  document.getElementById('example-box').classList.toggle('open');
+}
+
+// ================= PERSISTENCE LAYER =================
+// Uses the artifact's persistent key-value storage so data survives closing
+// the page. Falls back to an in-memory store (current session only) if that
+// storage API isn't available in this environment.
+const hasStorage = (typeof window.storage !== 'undefined');
+const memoryStore = {};
+
+async function storageGet(key){
+  if(hasStorage){
+    try{
+      const r = await window.storage.get(key);
+      return r ? r.value : null;
+    }catch(e){
+      return null;
+    }
+  }
+  return Object.prototype.hasOwnProperty.call(memoryStore, key) ? memoryStore[key] : null;
+}
+
+function sleep(ms){ return new Promise(res=>setTimeout(res, ms)); }
+
+async function storageSet(key, value){
+  if(hasStorage){
+    const MAX_ATTEMPTS = 3;
+    for(let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++){
+      try{
+        await window.storage.set(key, value);
+        return true; // success
+      }catch(e){
+        console.error('storage set failed (attempt '+attempt+')', e);
+        if(attempt < MAX_ATTEMPTS){
+          await sleep(attempt * 500); // 500ms, then 1000ms
+        }
+      }
+    }
+    return false; // all attempts failed
+  }
+  memoryStore[key] = value;
+  return true;
+}
+
+async function storageDelete(key){
+  if(hasStorage){
+    try{
+      await window.storage.delete(key);
+    }catch(e){
+      /* key may not exist — ignore */
+    }
+  } else {
+    delete memoryStore[key];
+  }
+}
+
+// ================= CASE INDEX =================
+const CASES_INDEX_KEY = 'cases_index';
+
+async function loadIndex(){
+  const raw = await storageGet(CASES_INDEX_KEY);
+  if(!raw) return [];
+  try{
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+}
+
+async function saveIndex(list){
+  await storageSet(CASES_INDEX_KEY, JSON.stringify(list));
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+async function renderCaseList(){
+  const list = await loadIndex();
+  list.sort((a,b)=> (b.updated||0) - (a.updated||0));
+  const container = document.getElementById('case-list');
+  const emptyMsg = document.getElementById('case-list-empty');
+  container.innerHTML = '';
+
+  if(list.length === 0){
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  list.forEach(item=>{
+    const row = document.createElement('div');
+    row.className = 'case-row';
+    const dateStr = item.updated
+      ? new Date(item.updated).toLocaleString('ru-RU', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})
+      : '';
+    row.innerHTML = `
+      <div class="case-row-main">
+        <span class="case-row-title">${escapeHtml(item.title)}</span>
+        <span class="case-row-date">обновлено: ${dateStr}</span>
+      </div>
+      <div class="case-row-actions">
+        <button class="roll-btn" type="button">Открыть</button>
+        <button class="del-btn" type="button">удалить</button>
+      </div>
+    `;
+    row.querySelector('.roll-btn').addEventListener('click', ()=> openCase(item.id));
+    row.querySelector('.del-btn').addEventListener('click', (e)=> handleDeleteClick(e.currentTarget, item.id));
+    container.appendChild(row);
+  });
+}
+
+function handleDeleteClick(btn, id){
+  if(btn.dataset.confirm === '1'){
+    deleteCase(id);
+  } else {
+    btn.dataset.confirm = '1';
+    const original = btn.textContent;
+    btn.textContent = 'точно?';
+    setTimeout(()=>{
+      btn.dataset.confirm = '';
+      btn.textContent = original;
+    }, 2500);
+  }
+}
+
+async function deleteCase(id){
+  let list = await loadIndex();
+  list = list.filter(c=>c.id !== id);
+  await saveIndex(list);
+  await storageDelete('case_' + id);
+  renderCaseList();
+}
+
+async function createCase(){
+  const input = document.getElementById('new-case-title');
+  const title = input.value.trim();
+  if(!title){
+    input.focus();
+    return;
+  }
+  const id = 'c' + Date.now() + Math.random().toString(36).slice(2,8);
+  const list = await loadIndex();
+  list.push({ id, title, updated: Date.now() });
+  await saveIndex(list);
+  input.value = '';
+  await openCase(id);
+}
+
+// ================= STATE (COLLECT / APPLY) =================
+function fieldVal(id){
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function setFieldVal(id, v){
+  const el = document.getElementById(id);
+  if(el) el.value = v || '';
+}
+
+function collectState(){
+  return {
+    info: {
+      name: fieldVal('field-name'),
+      age: fieldVal('field-age'),
+      job: fieldVal('field-job'),
+      unit: fieldVal('field-unit'),
+      appearance: fieldVal('field-appearance'),
+      nickname: fieldVal('field-nickname'),
+      background: fieldVal('field-background'),
+      strength: fieldVal('field-strength'),
+      weakness: fieldVal('field-weakness'),
+      goal: fieldVal('field-goal')
+    },
+    stats: stats.map((_, i)=> parseInt(document.getElementById('stat-'+i).value) || 0),
+    skills: skillsData.map((_, i)=> document.getElementById('skill-'+i).checked),
+    inventory: Array.from(document.querySelectorAll('#inv-list .row-item input[type=text]')).map(inp=>inp.value),
+    notes: {
+      connections: fieldVal('field-connections'),
+      freeNotes: fieldVal('field-freenotes')
+    }
+  };
+}
+
+function applyState(state){
+  state = state || {};
+  const info = state.info || {};
+  setFieldVal('field-name', info.name);
+  setFieldVal('field-age', info.age);
+  setFieldVal('field-job', info.job);
+  setFieldVal('field-unit', info.unit);
+  setFieldVal('field-appearance', info.appearance);
+  setFieldVal('field-nickname', info.nickname);
+  setFieldVal('field-background', info.background);
+  setFieldVal('field-strength', info.strength);
+  setFieldVal('field-weakness', info.weakness);
+  setFieldVal('field-goal', info.goal);
+
+  stats.forEach((_, i)=>{
+    const v = (state.stats && state.stats[i] != null) ? state.stats[i] : 0;
+    document.getElementById('stat-'+i).value = v;
+  });
+  updatePool();
+
+  skillsData.forEach((_, i)=>{
+    const checked = !!(state.skills && state.skills[i]);
+    document.getElementById('skill-'+i).checked = checked;
+    updateSkillAttrLabel(i);
+  });
+  updateSkillPool();
+
+  const invList = document.getElementById('inv-list');
+  invList.innerHTML = '';
+  const items = (state.inventory && state.inventory.length) ? state.inventory : ['', ''];
+  items.forEach(itemVal=>{
+    addRow('inv-list', false);
+    const inputs = invList.querySelectorAll('.row-item input[type=text]');
+    inputs[inputs.length - 1].value = itemVal;
+  });
+
+  const notes = state.notes || {};
+  setFieldVal('field-connections', notes.connections);
+  setFieldVal('field-freenotes', notes.freeNotes);
+}
+
+// ================= OPEN / SAVE / BACK =================
+let currentCaseId = null;
+let saveTimer = null;
+
+async function openCase(id){
+  currentCaseId = id;
+
+  const raw = await storageGet('case_' + id);
+  let state = null;
+  if(raw){
+    try{ state = JSON.parse(raw); }catch(e){ state = null; }
+  }
+  applyState(state);
+
+  const list = await loadIndex();
+  const item = list.find(c=>c.id === id);
+  document.getElementById('case-title-bar').textContent = item ? item.title : '';
+  setSaveStatus('', false);
+
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab[data-tab="t-info"]').classList.add('active');
+  document.getElementById('t-info').classList.add('active');
+
+  document.getElementById('screen-list').classList.remove('active');
+  document.getElementById('screen-case').classList.add('active');
+}
+
+function setSaveStatus(text, isError){
+  const el = document.getElementById('save-status');
+  if(!el) return;
+  el.textContent = text;
+  el.style.color = isError ? 'var(--stamp-red)' : 'var(--ink-soft)';
+}
+
+async function saveCurrentCase(){
+  if(!currentCaseId) return;
+  setSaveStatus('сохраняем…', false);
+  const state = collectState();
+  const ok = await storageSet('case_' + currentCaseId, JSON.stringify(state));
+  if(!ok){
+    setSaveStatus('ошибка сохранения — повторим при следующем изменении', true);
+    return;
+  }
+  const list = await loadIndex();
+  const item = list.find(c=>c.id === currentCaseId);
+  if(item){
+    item.updated = Date.now();
+    await saveIndex(list);
+  }
+  setSaveStatus('сохранено', false);
+}
+
+function scheduleSave(){
+  if(!currentCaseId) return;
+  setSaveStatus('изменено…', false);
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveCurrentCase, 600);
+}
+
+async function goBackToList(){
+  clearTimeout(saveTimer);
+  await saveCurrentCase();
+  currentCaseId = null;
+  document.getElementById('screen-case').classList.remove('active');
+  document.getElementById('screen-list').classList.add('active');
+  renderCaseList();
+}
+
+// autosave on any change within an open case (event delegation covers
+// dynamically-created stat/skill/inventory elements too)
+document.getElementById('screen-case').addEventListener('input', scheduleSave);
+document.getElementById('screen-case').addEventListener('change', scheduleSave);
+
+// initial render of the case archive
+renderCaseList();
+</script>
+
+</body>
+</html>
