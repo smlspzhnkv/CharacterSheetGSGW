@@ -1,1 +1,0 @@
-const API={async getCases(){},async getCase(id){},async createCase(title){},async updateCase(id,data){},async deleteCase(id){}};
